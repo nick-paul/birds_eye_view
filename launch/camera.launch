@@ -1,0 +1,17 @@
+<launch>
+    <group ns="my_camera">
+
+        <!-- launch the node -->
+        <node name="cam_pub" pkg="simple_camera_publisher" type="cam_pub" respawn="true" respawn_delay="10" output="screen">
+            <!-- Use a specific camera path -->
+            <param name="source" type="string" value="$(find birds_eye)/config/camera" /> 
+
+            <!-- Flip the image before publishing -->
+            <param name="hflip" type="bool" value="false" />
+
+            <!-- Show output in CV window -->
+            <param name="show_output" type="bool" value="false" />
+        </node>
+
+    </group>
+</launch>

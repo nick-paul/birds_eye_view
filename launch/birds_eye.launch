@@ -1,0 +1,13 @@
+<launch>
+
+    <include file="$(find birds_eye)/launch/camera.launch" />
+    <!--<include file="$(find prizm)/launch/twist_controller.launch" />-->
+    <include file="$(find lidar2d)/launch/hlds.launch" />
+
+    <!-- launch the node -->
+    <node name="birds_eye" pkg="birds_eye" type="birds_eye" respawn="true" respawn_delay="10" output="screen">
+        <!-- Use a specific camera path -->
+        <param name="camera_topic" type="string" value="/my_camera/cam_pub/image_raw" /> 
+        <param name="scan_topic"   type="string" value="/lidar2d/scan" />
+    </node>
+</launch>
