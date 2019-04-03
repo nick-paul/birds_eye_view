@@ -24,8 +24,7 @@ find_package(OpenCV REQUIRED)
 
 # For dynamic_reconfigure
 generate_dynamic_reconfigure_options(
-    cfg/LaneFollow.cfg
-    cfg/AvoidObstacle.cfg
+    cfg/BirdsEye.cfg
 )
 
 ###################################
@@ -61,13 +60,10 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(birds_eye src/birds_eye.cpp)
-add_executable(avoid_obstacle src/avoid_obstacle.cpp)
 
 # deps for dynamic_reconfigure
-add_dependencies(avoid_obstacle ${PROJECT_NAME}_gencfg ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(birds_eye ${PROJECT_NAME}_gencfg ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(birds_eye ${catkin_LIBRARIES} ${OpenCV_LIBS})
-target_link_libraries(avoid_obstacle ${catkin_LIBRARIES})
 

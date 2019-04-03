@@ -4,7 +4,7 @@
         <!-- launch the node -->
         <node name="cam_pub" pkg="simple_camera_publisher" type="cam_pub" respawn="true" respawn_delay="10" output="screen">
             <!-- Use a specific camera path -->
-            <param name="source" type="string" value="$(find birds_eye)/config/camera" /> 
+            <param name="source" type="string" value="/dev/v4l/by-id/usb-KYE_Systems_Corp._USB_Camera_200901010001-video-index0" />
 
             <!-- Flip the image before publishing -->
             <param name="hflip" type="bool" value="false" />
