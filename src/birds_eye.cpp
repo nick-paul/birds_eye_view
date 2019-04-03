@@ -183,7 +183,7 @@ void BirdsEye::makeOccupancyGrid(const cv::Mat &in, const sensor_msgs::LaserScan
             const uint8_t pixel = gray.at<uchar>(
                     std::floor(i * height_ratio), 
                     std::floor(j * width_ratio));
-            grid.data[i + j*width] = pixel == 0 ? 0 : 255;
+            grid.data[i + j*width] = pixel == 0 ? 0 : 127;
         }
     }
 
