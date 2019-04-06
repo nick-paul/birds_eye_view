@@ -149,22 +149,23 @@ void BirdsEye::makeOccupancyGrid(const cv::Mat &in, const sensor_msgs::LaserScan
     cv::Mat gray;
     cv::cvtColor(in, gray, cv::COLOR_BGR2GRAY);
 
-    const int width = 128;
-    const int height = 128;
-
-    cv::Size image_size = in.size();
+    cv::Size image_size = gray.size();
     const int image_width  = image_size.width;
     const int image_height = image_size.height;
 
-    double width_ratio  = (double)image_width / (double)width;
-    double height_ratio = (double)image_height / (double)height;
+    const int width = image_height / 4;
+    const int height = image_width / 4;
+
+
+    double width_ratio  = (double)image_height / (double)width;
+    double height_ratio = (double)image_width / (double)height;
 
     assert(width  < image_width);
     assert(height < image_height);
 
 
     // Build Grid 
-    const double resolution = 0.01;
+    const double resolution = config_.grid_res;
     grid.info.resolution = resolution;
     grid.info.width = width;
     grid.info.height = height;
@@ -176,14 +177,15 @@ void BirdsEye::makeOccupancyGrid(const cv::Mat &in, const sensor_msgs::LaserScan
     grid.data.resize(width * height);
 
     // Add pixels to grid
-    for (int i = 0; i < width; i++)
+    for (int x = 0; x < width; x++)
     {
-        for (int j = 0; j < height; j++)
+        for (int y = 0; y < height; y++)
         {
-            const uint8_t pixel = gray.at<uchar>(
-                    std::floor(i * height_ratio), 
-                    std::floor(j * width_ratio));
-            grid.data[i + j*width] = pixel == 0 ? 0 : 127;
+            const int row = x * width_ratio;
+            const int col = y * height_ratio;
+            const uint8_t pixel = gray.at<uchar>(row, col);
+
+            grid.data[x + y*width] = pixel == 0 ? 0 : 127;
         }
     }
 
@@ -202,13 +204,9 @@ void BirdsEye::makeOccupancyGrid(const cv::Mat &in, const sensor_msgs::LaserScan
         double x = radius * std::cos(theta) - grid.info.origin.position.x;
         double y = radius * std::sin(theta) - grid.info.origin.position.y;
 
-        x += config_.scan_offset_x;
-        y += config_.scan_offset_y;
-        double scale_shift = config_.scan_scale_shift;
-
         // Add to occupancy grid
-        int i = std::floor((1/resolution) * x * scale_shift);
-        int j = std::floor((1/resolution) * y * scale_shift);
+        int i = std::floor((1/resolution) * x);
+        int j = std::floor((1/resolution) * y);
 
         // Dilate Pixels
         i -= 1;
@@ -217,7 +215,7 @@ void BirdsEye::makeOccupancyGrid(const cv::Mat &in, const sensor_msgs::LaserScan
         {
             for (int dj = 0; dj < 3; dj++)
             {
-                if ((i+di) < width && (j+dj) < width && (i+di) > 0 && (j+dj) > 0)
+                if ((i+di) < width && (j+dj) < height && (i+di) > 0 && (j+dj) > 0)
                 {
                     grid.data[(i+di) + (j+dj)*width] = 100; // different number than image, still non-zero
                 }
@@ -235,9 +233,9 @@ void BirdsEye::birdsEye(const cv::Mat& source, cv::Mat& destination)
 {
     using namespace cv;
 
-    double alpha        =(config_.alpha -90) * M_PI/180;
-    double beta         =(config_.beta -90) * M_PI/180;
-    double gamma        =(config_.gamma -90) * M_PI/180;
+    double alpha        = (config_.alpha - 90) * M_PI/180;
+    double beta         = 0; // (config_.beta -90) * M_PI/180;
+    double gamma        = 0; // (config_.gamma -90) * M_PI/180;
     double dist         = config_.dist;
     double focalLength  = config_.f;
 
